@@ -7,6 +7,81 @@ import {
   forbiddenResponse,
   serverErrorResponse,
 } from "@b/utils/schema/errors";
+import { logger } from "@b/utils/console";
+
+/**
+ * Metadata structure for copy trading followers
+ */
+interface FollowerMetadata {
+  allocatedAmount?: number;
+  [key: string]: any;
+}
+
+/**
+ * Metadata structure for copy trading trades
+ */
+interface TradeMetadata {
+  profitShareAmount?: number;
+  [key: string]: any;
+}
+
+/**
+ * Calculate total allocated amount from all active followers
+ */
+async function calculateTotalAllocated(): Promise<number> {
+  try {
+    // Get all active followers with their allocation metadata
+    const activeFollowers = await models.copyTradingFollower.findAll({
+      where: { status: "ACTIVE" },
+      attributes: ["id", "metadata"],
+    });
+
+    // Sum up allocated amounts from metadata
+    let totalAllocated = 0;
+    for (const follower of activeFollowers) {
+      const metadata = follower.metadata as FollowerMetadata;
+      if (metadata && typeof metadata.allocatedAmount === 'number') {
+        totalAllocated += metadata.allocatedAmount;
+      }
+    }
+
+    return totalAllocated;
+  } catch (error) {
+    logger.error("COPY_TRADING", "Failed to calculate total allocated", error);
+    return 0;
+  }
+}
+
+/**
+ * Calculate platform revenue from profit sharing
+ */
+async function calculatePlatformRevenue(startDate: Date): Promise<number> {
+  try {
+    // Get all successful trades with profit since the start date
+    const profitableTrades = await models.copyTradingTrade.findAll({
+      where: {
+        status: "CLOSED",
+        profit: { [Op.gt]: 0 },
+        createdAt: { [Op.gte]: startDate },
+      },
+      attributes: ["profit", "metadata"],
+    });
+
+    // Calculate revenue from profit share
+    let platformRevenue = 0;
+    for (const trade of profitableTrades) {
+      const metadata = trade.metadata as TradeMetadata;
+      if (metadata && typeof metadata.profitShareAmount === 'number') {
+        platformRevenue += metadata.profitShareAmount;
+      }
+    }
+
+    return platformRevenue;
+  } catch (error) {
+    logger.error("COPY_TRADING", "Failed to calculate platform revenue", error);
+    return 0;
+  }
+}
 
 export const metadata = {
   summary: "Get Copy Trading Admin Dashboard",
@@ -163,8 +238,8 @@ export default async (data: Handler) => {
         active: followerCounts.ACTIVE?.count || 0,
         paused: followerCounts.PAUSED?.count || 0,
       },
-      totalAllocated: 0, // TODO: Calculate from follower allocations
-      platformRevenue: 0, // TODO: Calculate from profit share transactions
+      totalAllocated: await calculateTotalAllocated(),
+      platformRevenue: await calculatePlatformRevenue(today),
       todaysTrades,
       todaysVolume: todaysVolume || 0,
       failureRate,

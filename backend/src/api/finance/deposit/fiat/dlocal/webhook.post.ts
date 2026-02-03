@@ -174,7 +174,7 @@ export default async (data: Handler) => {
 
       logger.success("DLOCAL", `Wallet updated for user ${user.id}: +${depositAmount} ${currency}`);
 
-      // Send email notification
+      // Send notifications
       try {
         await models.notification.create({
           userId: user.id,
@@ -185,10 +185,17 @@ export default async (data: Handler) => {
           read: false,
         });
 
-        // TODO: Email service integration - when email service is configured, send email here
-        logger.info("DLOCAL", `Email notification queued for ${user.email} - successful deposit of ${depositAmount} ${currency}`);
-      } catch (emailError) {
-        logger.error("DLOCAL", "Failed to send email notification", emailError);
+        // Send email notification using the email service
+        const { sendEmailToTargetWithTemplate } = await import("@b/utils/emails");
+        await sendEmailToTargetWithTemplate(
+          user.email,
+          "Deposit Successful",
+          `<p>Hello ${user.firstName},</p><p>Your deposit of ${depositAmount} ${currency} via dLocal has been approved and credited to your wallet.</p><p>Thank you for using our platform!</p>`,
+          ctx
+        );
+        logger.info("DLOCAL", `Email notification sent to ${user.email} - successful deposit of ${depositAmount} ${currency}`);
+      } catch (notificationError) {
+        logger.error("DLOCAL", `Failed to send notifications to ${user.email}`, notificationError);
       }
 
       // Log the successful deposit
@@ -210,10 +217,17 @@ export default async (data: Handler) => {
           read: false,
         });
 
-        // TODO: Email service integration - when email service is configured, send email here
-        logger.info("DLOCAL", `Failure notification queued for ${transaction.user.email} - deposit ${payload.id} failed`);
-      } catch (emailError) {
-        logger.error("DLOCAL", "Failed to send failure notification", emailError);
+        // Send email notification using the email service
+        const { sendEmailToTargetWithTemplate } = await import("@b/utils/emails");
+        await sendEmailToTargetWithTemplate(
+          transaction.user.email,
+          "Deposit Failed",
+          `<p>Hello ${transaction.user.firstName},</p><p>Your dLocal deposit has failed. Status: ${payload.status}. ${payload.status_detail || "Please contact support for assistance."}</p><p>If you have any questions, please contact our support team.</p>`,
+          ctx
+        );
+        logger.info("DLOCAL", `Failure notification sent to ${transaction.user.email} - deposit ${payload.id} failed`);
+      } catch (notificationError) {
+        logger.error("DLOCAL", `Failed to send notifications to ${transaction.user.email}`, notificationError);
       }
     }
 

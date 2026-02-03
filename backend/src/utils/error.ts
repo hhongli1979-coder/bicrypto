@@ -1,8 +1,15 @@
+/**
+ * Error options interface for creating custom errors
+ */
 export interface ErrorOptions {
   statusCode: number;
   message: string;
 }
 
+/**
+ * Custom error class with HTTP status code support
+ * Extends the standard Error class to include HTTP status codes
+ */
 export class CustomError extends Error {
   statusCode: number;
   message: string;
@@ -21,6 +28,18 @@ export class CustomError extends Error {
   }
 }
 
+/**
+ * Creates a custom error with HTTP status code
+ * @param statusCode - HTTP status code (e.g., 400, 404, 500)
+ * @param message - Error message
+ * @returns CustomError instance
+ * 
+ * @example
+ * ```typescript
+ * throw createError(404, "User not found");
+ * throw createError({ statusCode: 400, message: "Invalid input" });
+ * ```
+ */
 export function createError(statusCode: number, message: string): CustomError;
 export function createError(options: ErrorOptions): CustomError;
 export function createError(arg1: any, arg2?: any): CustomError {

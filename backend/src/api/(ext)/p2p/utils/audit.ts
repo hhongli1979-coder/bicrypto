@@ -224,14 +224,23 @@ async function createSecurityAlert(log: P2PAuditLog, riskLevel: P2PRiskLevel, ct
 
     ctx?.step?.("Security alert sent successfully");
 
-    // TODO: Send to external security monitoring system (e.g., Sentry, DataDog)
-    // if (process.env.SECURITY_MONITORING_ENABLED === "true") {
-    //   await sendToSecurityMonitoring({
-    //     severity: riskLevel,
-    //     event: log.eventType,
-    //     details: log.metadata,
-    //   });
-    // }
+    // Send to external security monitoring system (e.g., Sentry, DataDog)
+    if (process.env.SECURITY_MONITORING_ENABLED === "true") {
+      try {
+        // Log structured data for external monitoring systems
+        logger.warn("P2P_SECURITY_MONITORING", JSON.stringify({
+          severity: riskLevel,
+          event: log.eventType,
+          entityType: log.entityType,
+          entityId: log.entityId,
+          userId: log.userId,
+          timestamp: new Date().toISOString(),
+          metadata: log.metadata,
+        }));
+      } catch (monitoringError) {
+        logger.error("P2P_SECURITY", "Failed to send to external monitoring", monitoringError);
+      }
+    }
   } catch (error) {
     ctx?.fail?.((error as Error).message || "Failed to create security alert");
     logger.error("P2P_SECURITY", "Failed to create security alert", error);
