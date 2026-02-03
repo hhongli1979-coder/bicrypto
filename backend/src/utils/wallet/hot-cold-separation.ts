@@ -264,11 +264,29 @@ export class HotColdWalletService {
 
   /**
    * Verify admin signature
+   * TODO: Implement proper cryptographic signature verification
+   * This should verify a signature created with the admin's private key
+   * against a known public key for that admin
    */
   private async verifySignature(signature: string, adminId: string): Promise<boolean> {
-    // In production, implement proper cryptographic signature verification
-    // This is a placeholder implementation
-    return signature && signature.length > 10 && adminId && adminId.length > 0;
+    // Placeholder - MUST be replaced with proper cryptographic verification
+    // Example: Use ECDSA signature verification with secp256k1 or Ed25519
+    // throw new Error('Signature verification not implemented - DO NOT USE IN PRODUCTION');
+    
+    // Temporary basic validation (NOT SECURE - for development only)
+    if (!signature || signature.length < 64) {
+      return false;
+    }
+    if (!adminId || adminId.length === 0) {
+      return false;
+    }
+    
+    // TODO: Implement actual signature verification:
+    // 1. Get admin's public key from database
+    // 2. Verify signature using crypto library (e.g., ethers, elliptic)
+    // 3. Ensure signature is for the correct transfer data
+    
+    return true;
   }
 }
 

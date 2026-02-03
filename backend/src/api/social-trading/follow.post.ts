@@ -158,12 +158,17 @@ export default async (data) => {
 
   // Get trader user info
   const traderUser = await models.user.findByPk(traderId);
+  
+  // Format trader name safely
+  const traderName = traderUser
+    ? `${traderUser.firstName || ''} ${traderUser.lastName || ''}`.trim() || 'Unknown'
+    : 'Unknown';
 
   // Send webhook notification
   await webhookService.sendWebhook(user.id, WebhookEvent.COPY_TRADE_OPENED, {
     copyTradeId: copyTrade.id,
     traderId,
-    traderName: traderUser?.firstName + ' ' + traderUser?.lastName || 'Unknown',
+    traderName,
     allocation,
     copyRatio,
   });

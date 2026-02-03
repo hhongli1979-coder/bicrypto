@@ -151,24 +151,3 @@ export default class evmWallet
     );
   }
 }
-
-export interface walletAttributes {
-  id: string;
-  userId: string;
-  type: "FIAT" | "SPOT" | "ECO" | "FUTURES" | "COPY_TRADING";
-  currency: string;
-  balance: number;
-  inOrder?: number;
-  address?: {
-    [key: string]: { address: string; network: string; balance: number };
-  };
-  status: boolean;
-  createdAt?: Date;
-  deletedAt?: Date;
-  updatedAt?: Date;
-}
-
-export type walletCreationAttributes = Optional<
-  walletAttributes,
-  "id" | "inOrder" | "address" | "createdAt" | "deletedAt" | "updatedAt"
->;

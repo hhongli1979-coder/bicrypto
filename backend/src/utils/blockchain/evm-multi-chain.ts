@@ -319,10 +319,16 @@ export class EVMMultiChainService {
    * Get encryption key from environment
    */
   private getEncryptionKey(): Buffer {
-    const key = process.env.WALLET_ENCRYPTION_KEY || 'default-key-32-chars-long!!!';
-    if (key.length !== 32) {
-      throw new Error('WALLET_ENCRYPTION_KEY must be 32 characters long');
+    const key = process.env.WALLET_ENCRYPTION_KEY;
+    
+    if (!key) {
+      throw new Error('WALLET_ENCRYPTION_KEY environment variable is required');
     }
+    
+    if (key.length !== 32) {
+      throw new Error('WALLET_ENCRYPTION_KEY must be exactly 32 characters long');
+    }
+    
     return Buffer.from(key, 'utf-8');
   }
 }

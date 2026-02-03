@@ -36,7 +36,7 @@ export class WebhookService {
   /**
    * Send webhook notification
    */
-  async sendWebhook(userId: string, event: string, data: any) {
+  async sendWebhook(userId: string, event: string, data: any, attempt: number = 0) {
     try {
       // Get user's webhook configuration
       const webhookConfig = await models.webhookConfig.findOne({
@@ -100,8 +100,10 @@ export class WebhookService {
         });
       }
 
-      // Retry with exponential backoff
-      await this.retryWebhook(userId, event, data, 1);
+      // Retry with exponential backoff (only if not already at max retries)
+      if (attempt < this.maxRetries) {
+        await this.retryWebhook(userId, event, data, attempt + 1);
+      }
       
       return { success: false, error: error.message };
     }
