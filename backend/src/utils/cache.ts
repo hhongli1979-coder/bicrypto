@@ -4,20 +4,39 @@ import { logger } from "./console";
 
 const redis = RedisSingleton.getInstance();
 
+/**
+ * CacheManager - Singleton class for managing application settings and extensions cache
+ * 
+ * This class provides a three-tier caching strategy:
+ * 1. In-memory Map for fastest access
+ * 2. Redis cache for shared state across instances
+ * 3. Database as source of truth
+ * 
+ * @example
+ * ```typescript
+ * const cache = CacheManager.getInstance();
+ * await cache.updateSetting('theme', 'dark', true);
+ * const theme = await cache.getSetting('theme');
+ * ```
+ */
 export class CacheManager {
   private static instance: CacheManager;
 
   private readonly settingsKey = "settings";
   private readonly extensionsKey = "extensions";
 
-  // Maps to store settings and extensions for quick access
+  /** In-memory cache for settings */
   private settings = new Map<string, any>();
+  /** In-memory cache for extensions */
   private extensions = new Map<string, any>();
 
   // Private constructor to prevent direct instantiation
   private constructor() {}
 
-  // Public method to provide access to the singleton instance
+  /**
+   * Get the singleton instance of CacheManager
+   * @returns The CacheManager instance
+   */
   public static getInstance(): CacheManager {
     if (!CacheManager.instance) {
       CacheManager.instance = new CacheManager();
@@ -25,7 +44,11 @@ export class CacheManager {
     return CacheManager.instance;
   }
 
-  // Load settings from Map, Redis, or DB if necessary
+  /**
+   * Load and return all settings from cache hierarchy
+   * Checks: Memory → Redis → Database
+   * @returns Map of all settings
+   */
   public async getSettings(): Promise<Map<string, any>> {
     if (this.settings.size === 0) {
       try {
@@ -36,14 +59,18 @@ export class CacheManager {
           await this.loadSettingsFromDB();
         }
       } catch (error) {
-        logger.error("CACHE", `Failed to load settings: ${error.message}`, error);
+        logger.error("CACHE", `Failed to load settings: ${(error as Error).message}`, error);
         throw error;
       }
     }
     return this.settings;
   }
 
-  // Load extensions from Map, Redis, or DB if necessary
+  /**
+   * Load and return all extensions from cache hierarchy
+   * Checks: Memory → Redis → Database
+   * @returns Map of all extensions
+   */
   public async getExtensions(): Promise<Map<string, any>> {
     if (this.extensions.size === 0) {
       try {
@@ -54,20 +81,29 @@ export class CacheManager {
           await this.loadExtensionsFromDB();
         }
       } catch (error) {
-        logger.error("CACHE", `Failed to load extensions: ${error.message}`, error);
+        logger.error("CACHE", `Failed to load extensions: ${(error as Error).message}`, error);
         throw error;
       }
     }
     return this.extensions;
   }
 
-  // Get a specific setting from the Map
+  /**
+   * Get a specific setting value by key
+   * @param key - Setting key to retrieve
+   * @returns Setting value or undefined if not found
+   */
   public async getSetting(key: string): Promise<any> {
     const settings = await this.getSettings();
     return settings.get(key);
   }
 
-  // Update a setting in both the Map and Redis cache, and optionally sync to DB
+  /**
+   * Update a setting in all cache layers
+   * @param key - Setting key to update
+   * @param value - New value for the setting
+   * @param syncToDB - Whether to persist to database (default: false)
+   */
   public async updateSetting(
     key: string,
     value: any,
@@ -81,7 +117,12 @@ export class CacheManager {
     }
   }
 
-  // Update an extension in both the Map and Redis cache, and optionally sync to DB
+  /**
+   * Update an extension in all cache layers
+   * @param name - Extension name to update
+   * @param data - New data for the extension
+   * @param syncToDB - Whether to persist to database (default: false)
+   */
   public async updateExtension(
     name: string,
     data: any,
@@ -95,7 +136,10 @@ export class CacheManager {
     }
   }
 
-  // Load settings from DB, populate Map, and update Redis cache
+  /**
+   * Load settings from database and populate caches
+   * @private
+   */
   private async loadSettingsFromDB(): Promise<void> {
     const settingsData = await models.settings.findAll();
     const pipeline = redis.pipeline();
