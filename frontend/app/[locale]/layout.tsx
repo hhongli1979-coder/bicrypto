@@ -14,6 +14,8 @@ import { SettingsStatus } from "@/components/development/settings-status";
 import { GlobalAuthDetector } from "@/components/auth/global-auth-detector";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getTranslations } from "next-intl/server";
+import { PWAProvider } from "@/components/providers/pwa-provider";
+import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -231,6 +233,9 @@ export default async function RootLayout(
           <link rel="icon" type="image/webp" sizes="32x32" href="/img/logo/favicon-32x32.webp" />
           <link rel="icon" type="image/webp" sizes="96x96" href="/img/logo/favicon-96x96.webp" />
           <link rel="apple-touch-icon" sizes="180x180" href="/img/logo/apple-icon-180x180.webp" />
+          {/* PWA Manifest */}
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#4F46E5" />
           {/* Conditionally load TradingView library if chart type is set to TradingView */}
           {settings?.chartType === "TRADINGVIEW" && (
             <script
@@ -252,9 +257,11 @@ export default async function RootLayout(
             >
               <DirectionProvider locale={locale}>
                 <ConditionalLayoutProvider>
+                  <PWAProvider />
                   {children}
                   <SettingsStatus />
                   <GlobalAuthDetector />
+                  <PWAInstallPrompt />
                 </ConditionalLayoutProvider>
               </DirectionProvider>
             </Providers>
