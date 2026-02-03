@@ -1,0 +1,204 @@
+/**
+ * 3D 立体文字效果库
+ * 包括霓虹、渐变、金属质感等效果
+ */
+
+/* ============================================
+   1. 霓虹发光文字 (Neon Glow)
+   ============================================ */
+.text-neon {
+  color: var(--kraken-primary);
+  text-shadow: 
+    0 0 10px rgba(87, 65, 217, 0.8),
+    0 0 20px rgba(87, 65, 217, 0.6),
+    0 0 30px rgba(87, 65, 217, 0.4),
+    0 0 40px rgba(87, 65, 217, 0.2);
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(87, 65, 217, 0.8),
+      0 0 20px rgba(87, 65, 217, 0.6),
+      0 0 30px rgba(87, 65, 217, 0.4);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(87, 65, 217, 1),
+      0 0 30px rgba(87, 65, 217, 0.8),
+      0 0 45px rgba(87, 65, 217, 0.6),
+      0 0 60px rgba(87, 65, 217, 0.4);
+  }
+}
+
+/* ============================================
+   2. 渐变文字 (Gradient Text)
+   ============================================ */
+.text-gradient {
+  background: var(--kraken-primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.text-gradient-animated {
+  background: linear-gradient(
+    90deg,
+    #5741D9 0%,
+    #7E22CE 25%,
+    #A855F7 50%,
+    #7E22CE 75%,
+    #5741D9 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================
+   3. 3D 立体文字 (3D Depth)
+   ============================================ */
+.text-3d {
+  color: var(--kraken-primary);
+  text-shadow:
+    1px 1px 0 #4C3BAA,
+    2px 2px 0 #4C3BAA,
+    3px 3px 0 #4C3BAA,
+    4px 4px 0 #4C3BAA,
+    5px 5px 0 #4C3BAA,
+    6px 6px 10px rgba(87, 65, 217, 0.4);
+  transform: translateZ(0);
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.text-3d:hover {
+  transform: translate(-2px, -2px) translateZ(0);
+  text-shadow:
+    3px 3px 0 #4C3BAA,
+    4px 4px 0 #4C3BAA,
+    5px 5px 0 #4C3BAA,
+    6px 6px 0 #4C3BAA,
+    7px 7px 0 #4C3BAA,
+    8px 8px 15px rgba(87, 65, 217, 0.5);
+}
+
+/* ============================================
+   4. 金属光泽文字 (Metallic)
+   ============================================ */
+.text-metallic {
+  background: linear-gradient(
+    180deg,
+    #E0E7FF 0%,
+    #5741D9 50%,
+    #1E1B4B 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.text-metallic::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(87, 65, 217, 0.4) 50%,
+    transparent 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   5. 玻璃态文字 (Glassmorphism Text)
+   ============================================ */
+.text-glass {
+  color: rgba(87, 65, 217, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(87, 65, 217, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2em 0.5em;
+  border-radius: var(--kraken-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   6. 发光边缘文字 (Glow Outline)
+   ============================================ */
+.text-glow-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--kraken-primary);
+  text-shadow: 
+    0 0 5px rgba(87, 65, 217, 0.5),
+    0 0 10px rgba(87, 65, 217, 0.3),
+    0 0 15px rgba(87, 65, 217, 0.2);
+  transition: all 0.3s ease;
+}
+
+.text-glow-outline:hover {
+  -webkit-text-stroke: 2px var(--kraken-primary-light);
+  text-shadow: 
+    0 0 10px rgba(126, 34, 206, 0.8),
+    0 0 20px rgba(126, 34, 206, 0.6),
+    0 0 30px rgba(126, 34, 206, 0.4);
+}
+
+/* ============================================
+   7. 多重阴影文字 (Multi-Shadow)
+   ============================================ */
+.text-multi-shadow {
+  color: var(--kraken-primary);
+  text-shadow:
+    0 1px 0 #4C3BAA,
+    0 2px 0 #4C3BAA,
+    0 3px 0 #4C3BAA,
+    0 4px 0 rgba(76, 59, 170, 0.8),
+    0 5px 0 rgba(76, 59, 170, 0.6),
+    0 6px 1px rgba(0, 0, 0, 0.1),
+    0 0 5px rgba(87, 65, 217, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 3px 5px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.15),
+    0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   响应式字体大小
+   ============================================ */
+.text-display-1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-display-2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.text-display-3 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}

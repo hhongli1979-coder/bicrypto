@@ -1,0 +1,146 @@
+/**
+ * Kraken 风格主题配色
+ * 深紫色品牌色 + 现代化设计
+ */
+
+:root {
+  /* ============================================
+     品牌主色 - Kraken Purple
+     ============================================ */
+  --kraken-primary: #5741D9;
+  --kraken-primary-light: #7E22CE;
+  --kraken-primary-dark: #4C3BAA;
+  --kraken-primary-gradient: linear-gradient(135deg, #5741D9 0%, #7E22CE 50%, #A855F7 100%);
+  
+  /* ============================================
+     功能色
+     ============================================ */
+  --kraken-success: #26A17B;
+  --kraken-success-light: #34D399;
+  --kraken-danger: #F05142;
+  --kraken-danger-light: #F87171;
+  --kraken-warning: #F59E0B;
+  --kraken-info: #3B82F6;
+  
+  /* ============================================
+     背景色 - 浅色模式
+     ============================================ */
+  --kraken-bg-primary: #FFFFFF;
+  --kraken-bg-secondary: #F7F9FB;
+  --kraken-bg-tertiary: #F1F3F5;
+  --kraken-bg-gradient: linear-gradient(180deg, #FFFFFF 0%, #F7F9FB 100%);
+  
+  /* ============================================
+     背景色 - 深色模式
+     ============================================ */
+  --kraken-dark-bg-primary: #0F0F14;
+  --kraken-dark-bg-secondary: #1A1A23;
+  --kraken-dark-bg-tertiary: #25252F;
+  --kraken-dark-bg-gradient: linear-gradient(180deg, #0F0F14 0%, #1A1A23 100%);
+  
+  /* ============================================
+     文字颜色 - 浅色模式
+     ============================================ */
+  --kraken-text-primary: #1A1D1F;
+  --kraken-text-secondary: #6F767E;
+  --kraken-text-tertiary: #9A9FA5;
+  --kraken-text-inverse: #FFFFFF;
+  
+  /* ============================================
+     文字颜色 - 深色模式
+     ============================================ */
+  --kraken-dark-text-primary: #F7F9FB;
+  --kraken-dark-text-secondary: #9A9FA5;
+  --kraken-dark-text-tertiary: #6F767E;
+  
+  /* ============================================
+     卡片样式
+     ============================================ */
+  --kraken-card-bg: #FFFFFF;
+  --kraken-card-border: #E6EBF1;
+  --kraken-card-hover: #F7F9FB;
+  --kraken-card-shadow: 0 2px 8px rgba(87, 65, 217, 0.08);
+  --kraken-card-shadow-hover: 0 8px 24px rgba(87, 65, 217, 0.16);
+  
+  /* ============================================
+     边框颜色
+     ============================================ */
+  --kraken-border: #E6EBF1;
+  --kraken-border-light: #F1F3F5;
+  --kraken-border-dark: #D1D5DB;
+  --kraken-border-focus: #5741D9;
+  
+  /* ============================================
+     圆角尺寸
+     ============================================ */
+  --kraken-radius-xs: 4px;
+  --kraken-radius-sm: 8px;
+  --kraken-radius-md: 12px;
+  --kraken-radius-lg: 16px;
+  --kraken-radius-xl: 24px;
+  --kraken-radius-2xl: 32px;
+  --kraken-radius-full: 9999px;
+  
+  /* ============================================
+     阴影层级
+     ============================================ */
+  --kraken-shadow-xs: 0 1px 2px rgba(87, 65, 217, 0.05);
+  --kraken-shadow-sm: 0 2px 8px rgba(87, 65, 217, 0.08);
+  --kraken-shadow-md: 0 4px 16px rgba(87, 65, 217, 0.12);
+  --kraken-shadow-lg: 0 8px 32px rgba(87, 65, 217, 0.16);
+  --kraken-shadow-xl: 0 12px 48px rgba(87, 65, 217, 0.20);
+  
+  /* ============================================
+     动画时长
+     ============================================ */
+  --kraken-duration-fast: 150ms;
+  --kraken-duration-normal: 250ms;
+  --kraken-duration-slow: 350ms;
+  
+  /* ============================================
+     动画曲线
+     ============================================ */
+  --kraken-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --kraken-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --kraken-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --kraken-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   深色模式适配
+   ============================================ */
+.dark {
+  --kraken-bg-primary: var(--kraken-dark-bg-primary);
+  --kraken-bg-secondary: var(--kraken-dark-bg-secondary);
+  --kraken-bg-tertiary: var(--kraken-dark-bg-tertiary);
+  --kraken-bg-gradient: var(--kraken-dark-bg-gradient);
+  
+  --kraken-text-primary: var(--kraken-dark-text-primary);
+  --kraken-text-secondary: var(--kraken-dark-text-secondary);
+  --kraken-text-tertiary: var(--kraken-dark-text-tertiary);
+  
+  --kraken-card-bg: var(--kraken-dark-bg-secondary);
+  --kraken-card-border: rgba(255, 255, 255, 0.1);
+  --kraken-card-hover: var(--kraken-dark-bg-tertiary);
+}
+
+/* ============================================
+   全局样式应用
+   ============================================ */
+body.kraken-theme {
+  background: var(--kraken-bg-primary);
+  color: var(--kraken-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background-color var(--kraken-duration-normal) var(--kraken-ease);
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 选中文本颜色 */
+::selection {
+  background: var(--kraken-primary);
+  color: white;
+}

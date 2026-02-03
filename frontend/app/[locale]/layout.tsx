@@ -12,7 +12,7 @@ import { getSettings } from "@/lib/fetchers/settings";
 import ConditionalLayoutProvider from "@/components/layout/conditional-layout-provider";
 import { SettingsStatus } from "@/components/development/settings-status";
 import { GlobalAuthDetector } from "@/components/auth/global-auth-detector";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { getTranslations } from "next-intl/server";
 
 const geistSans = Geist({
@@ -23,6 +23,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata = {
@@ -240,7 +247,7 @@ export default async function RootLayout(
           )}
         </head>
         <body 
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
           style={{ "--radius": "0.5rem" } as React.CSSProperties}
           suppressHydrationWarning
         >
