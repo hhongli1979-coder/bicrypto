@@ -29,7 +29,14 @@ export type HttpMethod =
   | "trace"
   | "all";
 
-export type IErrorHandler = (err: any, res: Response, req: Request) => void;
+export interface IError extends Error {
+  statusCode?: number;
+  status?: number;
+  code?: string;
+  details?: unknown;
+}
+
+export type IErrorHandler = (err: IError, res: Response, req: Request) => void;
 
 export type HttpContentType =
   | "application/x-www-form-urlencoded"

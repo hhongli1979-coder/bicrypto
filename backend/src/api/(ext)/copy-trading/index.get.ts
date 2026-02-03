@@ -1,8 +1,59 @@
-// User Copy Trading Dashboard
 import { models } from "@b/db";
 import { createError } from "@b/utils/error";
 import { Op } from "sequelize";
 import { getLeaderByUserId, getCopyTradingSettings } from "./utils";
+
+/**
+ * Calculate total allocated amount for a leader
+ */
+async function calculateLeaderTotalAllocated(leaderId: string): Promise<number> {
+  try {
+    const followers = await models.copyTradingFollower.findAll({
+      where: { 
+        leaderId,
+        status: { [Op.in]: ["ACTIVE", "PAUSED"] }
+      },
+      attributes: ["metadata"],
+    });
+
+    let total = 0;
+    for (const follower of followers) {
+      const metadata = follower.metadata as any;
+      if (metadata && typeof metadata.allocatedAmount === 'number') {
+        total += metadata.allocatedAmount;
+      }
+    }
+
+    return total;
+  } catch (error) {
+    return 0;
+  }
+}
+
+/**
+ * Calculate total ROI from allocations
+ */
+async function calculateFollowerTotalROI(subscriptions: any[]): Promise<number> {
+  try {
+    let totalROI = 0;
+    let totalAllocated = 0;
+
+    for (const subscription of subscriptions) {
+      const metadata = subscription.metadata as any;
+      const allocatedAmount = metadata?.allocatedAmount || 0;
+      const profit = subscription.totalProfit || 0;
+
+      if (allocatedAmount > 0) {
+        totalAllocated += allocatedAmount;
+        totalROI += (profit / allocatedAmount) * 100;
+      }
+    }
+
+    return totalAllocated > 0 ? totalROI / subscriptions.length : 0;
+  } catch (error) {
+    return 0;
+  }
+}
 
 export const metadata = {
   summary: "Get Copy Trading Dashboard",
@@ -65,8 +116,9 @@ export default async (data: Handler) => {
     const pausedFollowers = await models.copyTradingFollower.count({
       where: { leaderId: leaderProfile.id, status: "PAUSED" },
     });
-    // Total allocated is now calculated from allocations, not follower records
-    const totalAllocatedByFollowers = 0; // TODO: Calculate from allocations if needed
+    
+    // Calculate total allocated by followers from their metadata
+    const totalAllocatedByFollowers = await calculateLeaderTotalAllocated(leaderProfile.id);
 
     // Get recent leader trades
     const recentLeaderTrades = await models.copyTradingTrade.findAll({
@@ -106,8 +158,9 @@ export default async (data: Handler) => {
   const activeCount = subscriptions.filter((s: any) => s.status === "ACTIVE").length;
   const pausedCount = subscriptions.filter((s: any) => s.status === "PAUSED").length;
   const totalProfit = subscriptions.reduce((sum: number, s: any) => sum + (s.totalProfit || 0), 0);
-  // TODO: Calculate total allocated from allocations if needed for ROI
-  const totalROI = 0; // ROI calculation needs to be based on allocations
+  
+  // Calculate total ROI from allocations
+  const totalROI = await calculateFollowerTotalROI(subscriptions);
 
   ctx?.step("Fetching recent trades");
   // Get recent trades as follower

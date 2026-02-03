@@ -449,10 +449,17 @@ export default async (data: Handler) => {
               read: false,
             });
 
-            // TODO: Email service integration - when email service is configured, send welcome email here
-            logger.debug("USER_IMPORT", `Welcome notification queued for imported user: ${newUser.email}`);
+            // Send welcome email using the email service
+            const { sendEmailToTargetWithTemplate } = await import("@b/utils/emails");
+            await sendEmailToTargetWithTemplate(
+              newUser.email,
+              "Welcome to the Platform",
+              `<p>Welcome ${newUser.firstName}!</p><p>Your account has been created successfully. Please complete your profile and explore our features.</p><p>Thank you for joining us!</p>`,
+              ctx
+            );
+            logger.debug("USER_IMPORT", `Welcome email sent to imported user: ${newUser.email}`);
           } catch (notifError) {
-            logger.error("USER_IMPORT", `Failed to send welcome notification to ${newUser.email}`, notifError);
+            logger.error("USER_IMPORT", `Failed to send welcome email to ${newUser.email}`, notifError);
           }
         }
 

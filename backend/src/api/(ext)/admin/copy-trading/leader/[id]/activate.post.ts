@@ -66,7 +66,32 @@ export default async (data: Handler) => {
     adminId: user?.id,
   });
 
-  // TODO: Send notification to leader
+  // Send notification to leader about activation
+  ctx?.step("Sending activation notification to leader");
+  try {
+    const leaderUser = await models.user.findByPk(leader.userId);
+    if (leaderUser) {
+      // Create in-app notification
+      await models.notification.create({
+        userId: leader.userId,
+        type: "alert",
+        title: "Copy Trading Leader Status Activated",
+        message: `Your copy trading leader account has been activated. You can now start accepting followers again.`,
+        link: "/user/copy-trading",
+        read: false,
+      });
+
+      // Send email notification
+      try {
+        const { sendCopyTradingLeaderApprovedEmail } = await import("@b/utils/emails");
+        await sendCopyTradingLeaderApprovedEmail(leaderUser, ctx);
+      } catch (emailError) {
+        ctx?.fail?.(`Failed to send activation email: ${(emailError as Error).message}`);
+      }
+    }
+  } catch (notifError) {
+    ctx?.fail?.(`Failed to send activation notification: ${(notifError as Error).message}`);
+  }
 
   ctx?.success("Leader activated successfully");
   return {
