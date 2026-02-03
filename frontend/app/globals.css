@@ -5,6 +5,10 @@
 /* Import the variables CSS file */
 @import "../styles/variables.css";
 
+/* Import Kraken theme and 3D text effects */
+@import "../styles/themes/kraken.css";
+@import "../styles/3d-text-effects.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
