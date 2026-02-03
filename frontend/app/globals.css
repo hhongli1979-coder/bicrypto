@@ -848,12 +848,12 @@ body > [data-testid*="modal"] {
   padding: 1rem;
   margin: 1rem 0;
   overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, monospace;
   font-size: 0.875rem;
 }
 
 .wysiwyg-content code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, monospace;
   font-size: 0.875em;
   background-color: hsl(var(--muted));
   padding: 0.125rem 0.25rem;
