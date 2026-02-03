@@ -10,6 +10,22 @@ import {
 import { logger } from "@b/utils/console";
 
 /**
+ * Metadata structure for copy trading followers
+ */
+interface FollowerMetadata {
+  allocatedAmount?: number;
+  [key: string]: any;
+}
+
+/**
+ * Metadata structure for copy trading trades
+ */
+interface TradeMetadata {
+  profitShareAmount?: number;
+  [key: string]: any;
+}
+
+/**
  * Calculate total allocated amount from all active followers
  */
 async function calculateTotalAllocated(): Promise<number> {
@@ -23,7 +39,7 @@ async function calculateTotalAllocated(): Promise<number> {
     // Sum up allocated amounts from metadata
     let totalAllocated = 0;
     for (const follower of activeFollowers) {
-      const metadata = follower.metadata as any;
+      const metadata = follower.metadata as FollowerMetadata;
       if (metadata && typeof metadata.allocatedAmount === 'number') {
         totalAllocated += metadata.allocatedAmount;
       }
@@ -54,7 +70,7 @@ async function calculatePlatformRevenue(startDate: Date): Promise<number> {
     // Calculate revenue from profit share
     let platformRevenue = 0;
     for (const trade of profitableTrades) {
-      const metadata = trade.metadata as any;
+      const metadata = trade.metadata as TradeMetadata;
       if (metadata && typeof metadata.profitShareAmount === 'number') {
         platformRevenue += metadata.profitShareAmount;
       }

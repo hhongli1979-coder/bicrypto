@@ -4,6 +4,22 @@ import { Op } from "sequelize";
 import { getLeaderByUserId, getCopyTradingSettings } from "./utils";
 
 /**
+ * Metadata structure for copy trading followers
+ */
+interface FollowerMetadata {
+  allocatedAmount?: number;
+  [key: string]: any;
+}
+
+/**
+ * Metadata structure for copy trading subscriptions
+ */
+interface SubscriptionMetadata {
+  allocatedAmount?: number;
+  [key: string]: any;
+}
+
+/**
  * Calculate total allocated amount for a leader
  */
 async function calculateLeaderTotalAllocated(leaderId: string): Promise<number> {
@@ -18,7 +34,7 @@ async function calculateLeaderTotalAllocated(leaderId: string): Promise<number> 
 
     let total = 0;
     for (const follower of followers) {
-      const metadata = follower.metadata as any;
+      const metadata = follower.metadata as FollowerMetadata;
       if (metadata && typeof metadata.allocatedAmount === 'number') {
         total += metadata.allocatedAmount;
       }
@@ -32,24 +48,24 @@ async function calculateLeaderTotalAllocated(leaderId: string): Promise<number> 
 
 /**
  * Calculate total ROI from allocations
+ * Calculates proper average ROI: (totalProfit / totalAllocated) * 100
  */
 async function calculateFollowerTotalROI(subscriptions: any[]): Promise<number> {
   try {
-    let totalROI = 0;
+    let totalProfit = 0;
     let totalAllocated = 0;
 
     for (const subscription of subscriptions) {
-      const metadata = subscription.metadata as any;
+      const metadata = subscription.metadata as SubscriptionMetadata;
       const allocatedAmount = metadata?.allocatedAmount || 0;
       const profit = subscription.totalProfit || 0;
 
-      if (allocatedAmount > 0) {
-        totalAllocated += allocatedAmount;
-        totalROI += (profit / allocatedAmount) * 100;
-      }
+      totalAllocated += allocatedAmount;
+      totalProfit += profit;
     }
 
-    return totalAllocated > 0 ? totalROI / subscriptions.length : 0;
+    // Calculate proper ROI: (total profit / total allocated) * 100
+    return totalAllocated > 0 ? (totalProfit / totalAllocated) * 100 : 0;
   } catch (error) {
     return 0;
   }
