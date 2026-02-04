@@ -1879,20 +1879,37 @@ EOF
     # Create a systemd service for auto-start (optional)
     if command -v systemctl >/dev/null 2>&1; then
         print_info "Creating systemd service for auto-start..."
+        
+        # Get the correct group for the user
+        local app_group=$(id -gn "$app_user" 2>/dev/null || echo "$app_user")
+        
+        # Create the systemd service file
         cat > /etc/systemd/system/bicrypto.service << EOF
 [Unit]
 Description=Bicrypto V5 Application
-After=network.target
+After=network.target mysql.service mariadb.service redis.service
+Wants=mysql.service mariadb.service redis.service
 
 [Service]
 Type=simple
 User=$app_user
+Group=$app_group
 WorkingDirectory=$(pwd)
-Environment=PATH=/usr/local/bin:/usr/bin:/bin:/home/$app_user/.local/bin
-Environment=NODE_ENV=production
-ExecStart=/usr/local/bin/pnpm start
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/home/$app_user/.local/bin"
+Environment="NODE_ENV=production"
+# Wait for services to be ready before starting
+ExecStartPre=/bin/sleep 5
+# Use bash to handle pnpm command properly
+ExecStart=/usr/bin/env bash -c 'if command -v pnpm >/dev/null 2>&1; then pnpm start; else npx pnpm start; fi'
 Restart=always
 RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bicrypto
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
@@ -1902,6 +1919,14 @@ EOF
         systemctl daemon-reload
         systemctl enable bicrypto.service
         print_success "Systemd service created and enabled"
+        
+        # Print service management instructions
+        print_info "Systemd service commands:"
+        echo -e "  Start:   ${CYAN}sudo systemctl start bicrypto${NC}"
+        echo -e "  Stop:    ${CYAN}sudo systemctl stop bicrypto${NC}"
+        echo -e "  Restart: ${CYAN}sudo systemctl restart bicrypto${NC}"
+        echo -e "  Status:  ${CYAN}sudo systemctl status bicrypto${NC}"
+        echo -e "  Logs:    ${CYAN}sudo journalctl -u bicrypto -f${NC}"
     fi
     
     # Start the application
