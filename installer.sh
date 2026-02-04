@@ -2126,11 +2126,26 @@ EOF
     
     echo -e "${PURPLE}${BOLD}⚡ QUICK COMMANDS${NC}"
     echo -e "${BLUE}═══════════════════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${WHITE}• Start Server:${NC}   ${CYAN}pnpm start${NC} ${YELLOW}(or)${NC} ${CYAN}systemctl start bicrypto${NC}"
-    echo -e "${WHITE}• Stop Server:${NC}    ${CYAN}pkill -f 'pnpm start'${NC} ${YELLOW}(or)${NC} ${CYAN}systemctl stop bicrypto${NC}"
-    echo -e "${WHITE}• View Logs:${NC}      ${CYAN}cat /tmp/bicrypto-startup.log${NC}"
-    echo -e "${WHITE}• Restart:${NC}        ${CYAN}systemctl restart bicrypto${NC}"
-    echo -e "${WHITE}• Service Status:${NC} ${CYAN}systemctl status bicrypto${NC}"
+    echo -e "${WHITE}• Start Server:${NC}   ${CYAN}./start-bicrypto.sh${NC} ${YELLOW}(or)${NC} ${CYAN}sudo systemctl start bicrypto${NC}"
+    echo -e "${WHITE}• Stop Server:${NC}    ${CYAN}pm2 stop all${NC} ${YELLOW}(or)${NC} ${CYAN}sudo systemctl stop bicrypto${NC}"
+    echo -e "${WHITE}• Restart:${NC}        ${CYAN}pm2 restart all${NC} ${YELLOW}(or)${NC} ${CYAN}sudo systemctl restart bicrypto${NC}"
+    echo -e "${WHITE}• Service Status:${NC} ${CYAN}./health-check.sh${NC} ${YELLOW}(or)${NC} ${CYAN}sudo systemctl status bicrypto${NC}"
+    echo -e "${WHITE}• View Logs:${NC}      ${CYAN}pm2 logs${NC} ${YELLOW}(or)${NC} ${CYAN}sudo journalctl -u bicrypto -f${NC}"
+    echo -e "${BLUE}═══════════════════════════════════════════════════════════════════════════════${NC}\n"
+    
+    echo -e "${CYAN}${BOLD}🔄 AUTO-START ON BOOT${NC}"
+    echo -e "${BLUE}═══════════════════════════════════════════════════════════════════════════════${NC}"
+    if systemctl list-unit-files | grep -q bicrypto.service 2>/dev/null; then
+        echo -e "${WHITE}• Systemd service:${NC} ${GREEN}Installed and enabled${NC}"
+        echo -e "${WHITE}• Auto-start:${NC}     ${GREEN}Enabled (will start on reboot)${NC}"
+        echo -e "${WHITE}• Verify:${NC}         ${CYAN}sudo systemctl is-enabled bicrypto${NC}"
+    else
+        echo -e "${WHITE}• Systemd service:${NC} ${YELLOW}Available but not installed${NC}"
+        echo -e "${WHITE}• To enable:${NC}      ${CYAN}sudo cp bicrypto.service /etc/systemd/system/${NC}"
+        echo -e "${WHITE}                  ${CYAN}sudo systemctl daemon-reload${NC}"
+        echo -e "${WHITE}                  ${CYAN}sudo systemctl enable bicrypto${NC}"
+        echo -e "${WHITE}                  ${CYAN}sudo systemctl start bicrypto${NC}"
+    fi
     echo -e "${BLUE}═══════════════════════════════════════════════════════════════════════════════${NC}\n"
     
     echo -e "${RED}${BOLD}⚠️  IMPORTANT SECURITY NOTES${NC}"
