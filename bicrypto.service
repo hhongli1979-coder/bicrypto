@@ -1,0 +1,26 @@
+[Unit]
+Description=Bicrypto V5 Application
+After=network.target mysql.service mariadb.service redis.service
+Wants=mysql.service mariadb.service redis.service
+
+[Service]
+Type=simple
+User=runner
+Group=runner
+WorkingDirectory=/home/runner/work/bicrypto/bicrypto
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/home/runner/.local/bin"
+Environment="NODE_ENV=production"
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/env bash -c 'if command -v pnpm >/dev/null 2>&1; then pnpm start; else npx pnpm start; fi'
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bicrypto
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
