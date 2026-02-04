@@ -1899,8 +1899,8 @@ Environment="PATH=/usr/local/bin:/usr/bin:/bin:/home/$app_user/.local/bin"
 Environment="NODE_ENV=production"
 # Wait for services to be ready before starting
 ExecStartPre=/bin/sleep 5
-# Use bash to handle pnpm command properly
-ExecStart=/usr/bin/env bash -c 'if command -v pnpm >/dev/null 2>&1; then pnpm start; else npx pnpm start; fi'
+# Use the startup script for better reliability
+ExecStart=$(pwd)/start-bicrypto.sh
 Restart=always
 RestartSec=10
 StandardOutput=journal

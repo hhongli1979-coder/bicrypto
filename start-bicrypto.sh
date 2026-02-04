@@ -30,7 +30,9 @@ log_warning() {
 # Load environment variables if .env exists
 if [[ -f ".env" ]]; then
     log_info "Loading environment variables from .env"
-    export $(grep -v '^#' .env | xargs -0)
+    set -a
+    source .env
+    set +a
 fi
 
 # Set default environment
